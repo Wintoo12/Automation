@@ -1,8 +1,10 @@
 import time
 from selenium import webdriver
+from selenium.common import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import random
 
 # Initialize WebDriverWait
 def initialize_wait_drive_feed(driver):
@@ -10,6 +12,12 @@ def initialize_wait_drive_feed(driver):
 
 def scroll_to_element(driver, element):
     driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
+
+def generate_grades():
+    # Generate three random float numbers between 1.0 and 2.8
+    randGrades = [round(random.uniform(1.0, 2.8), 1) for _ in range(3)]
+    # Join them into a space-separated string
+    return " ".join(map(str, randGrades))
 
 # Set up the driver
 driver = webdriver.Chrome()
@@ -35,7 +43,7 @@ try:
     # Year
     try:
         # 4th year
-        locator = (By.XPATH, "(//div[@class='AB7Lab Id5V1'])[4]")
+        locator = (By.XPATH, "(//span[normalize-space()='2nd Year'])[1]")
         year = wait_driver.until(EC.visibility_of_element_located(locator))
         scroll_to_element(driver, year)
         year.click()
@@ -49,7 +57,7 @@ try:
     # Department
     try:
         # CCS
-        locator = (By.XPATH, "(//div[@class='AB7Lab Id5V1'])[5]")
+        locator = (By.XPATH, "(//span[normalize-space()='College of Maritime Education'])[1]")
         department = wait_driver.until(EC.visibility_of_element_located(locator))
         scroll_to_element(driver, department)
         department.click()
@@ -251,7 +259,8 @@ try:
         locator = (By.XPATH, "(//input[@class='whsOnd zHQkBf'])[1]")
         grades = wait_driver.until(EC.visibility_of_element_located(locator))
         scroll_to_element(driver, grades)
-        grades.send_keys("1.8 1.2 1.7")
+        grades_string = generate_grades()
+        grades.send_keys(grades_string)
     except TimeoutException as e:
         print("Host Create from did not show on time", e)
     except ElementClickInterceptedException as e:
@@ -500,16 +509,16 @@ try:
     except ElementClickInterceptedException as e:
         print("Can't click on Host elements", e)
 
-    # time.sleep(4)
+    time.sleep(4)
     # Submit
-    # try:
-    #     locator = (By.XPATH, "(//span[@class='l4V7wb Fxmcue'])[2]")
-    #     submit = wait_driver.until(EC.visibility_of_element_located(locator))
-    #     submit.click()
-    # except TimeoutException as e:
-    #     print("Host Create from did not show on time", e)
-    # except ElementClickInterceptedException as e:
-    #     print("Can't click on Host elements", e)
+    try:
+        locator = (By.XPATH, "(//span[@class='l4V7wb Fxmcue'])[2]")
+        submit = wait_driver.until(EC.visibility_of_element_located(locator))
+        submit.click()
+    except TimeoutException as e:
+        print("Host Create from did not show on time", e)
+    except ElementClickInterceptedException as e:
+        print("Can't click on Host elements", e)
 
 except TimeoutException as e:
     print("Host Create from did not show on time", e)
